@@ -58,7 +58,7 @@ Add the following to your `.env` file:
 ACTIVITY_LOG_ENABLED=true
 
 # Logstash HTTP endpoint for receiving logs
-ACTIVITY_LOG_ENDPOINT=http://172.16.27.78:5044
+ACTIVITY_LOG_ENDPOINT=http://localhost:5044
 
 # Application name for log identification
 ACTIVITY_LOG_APP_NAME=my-laravel-app
