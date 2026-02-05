@@ -82,6 +82,68 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Exclude AJAX Requests
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, AJAX/XHR requests will not be logged. This helps reduce
+    | noise from DataTables, live search, and other AJAX components.
+    |
+    */
+    'exclude_ajax' => env('ACTIVITY_LOG_EXCLUDE_AJAX', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Exclude JSON Requests
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, requests expecting JSON response will not be logged.
+    |
+    */
+    'exclude_json_requests' => env('ACTIVITY_LOG_EXCLUDE_JSON', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Only Log Named Routes
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, only routes with names will be logged. This helps filter
+    | out asset requests and focus on controller actions.
+    |
+    */
+    'only_named_routes' => env('ACTIVITY_LOG_ONLY_NAMED_ROUTES', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Included Route Names
+    |--------------------------------------------------------------------------
+    |
+    | If specified, only routes matching these patterns will be logged.
+    | Supports wildcards. Leave empty to log all routes.
+    | Example: ['orders.*', 'users.*', 'products.store']
+    |
+    */
+    'included_routes' => [],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Excluded Route Names
+    |--------------------------------------------------------------------------
+    |
+    | Routes matching these patterns will NOT be logged.
+    | Supports wildcards.
+    |
+    */
+    'excluded_routes' => [
+        '*.datatable*',
+        '*.datatables*',
+        '*.ajax*',
+        '*.search*',
+        '*.autocomplete*',
+        '*.suggest*',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Excluded Paths
     |--------------------------------------------------------------------------
     |
@@ -98,6 +160,15 @@ return [
         'telescope/*',
         'horizon/*',
         'sanctum/csrf-cookie',
+        // DataTables and AJAX common paths
+        '*/datatable*',
+        '*/datatables*',
+        '*/ajax/*',
+        '*/search',
+        '*/autocomplete',
+        '*/select2/*',
+        '*/livewire/*',
+        'livewire/*',
     ],
 
     /*
@@ -110,7 +181,7 @@ return [
     |
     */
     'excluded_methods' => [
-        // 'OPTIONS',
+        'OPTIONS',
     ],
 
     /*

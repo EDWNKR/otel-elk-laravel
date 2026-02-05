@@ -81,6 +81,15 @@ ACTIVITY_LOG_AUTO_MIDDLEWARE=true
 # Log authentication events (default: true)
 ACTIVITY_LOG_AUTH_EVENTS=true
 
+# Exclude AJAX/XHR requests (default: true) - reduces DataTable noise
+ACTIVITY_LOG_EXCLUDE_AJAX=true
+
+# Exclude requests expecting JSON response (default: false)
+ACTIVITY_LOG_EXCLUDE_JSON=false
+
+# Only log routes that have a name (default: false)
+ACTIVITY_LOG_ONLY_NAMED_ROUTES=false
+
 # User resolver: 'default', 'session', or 'custom'
 ACTIVITY_LOG_USER_RESOLVER=default
 

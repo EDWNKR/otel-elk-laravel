@@ -305,6 +305,48 @@ class ActivityLogService
             return true;
         }
 
+        // Check if AJAX requests should be excluded
+        if (config('activity_log.exclude_ajax', true) && $request->ajax()) {
+            return true;
+        }
+
+        // Check if JSON requests should be excluded
+        if (config('activity_log.exclude_json_requests', false) && $request->wantsJson()) {
+            return true;
+        }
+
+        // Check if only named routes should be logged
+        $route = $request->route();
+        $routeName = $route?->getName();
+
+        if (config('activity_log.only_named_routes', false) && empty($routeName)) {
+            return true;
+        }
+
+        // Check included routes (whitelist)
+        $includedRoutes = config('activity_log.included_routes', []);
+        if (!empty($includedRoutes) && $routeName) {
+            $isIncluded = false;
+            foreach ($includedRoutes as $pattern) {
+                if (Str::is($pattern, $routeName)) {
+                    $isIncluded = true;
+                    break;
+                }
+            }
+            if (!$isIncluded) {
+                return true;
+            }
+        }
+
+        // Check excluded routes (blacklist)
+        if ($routeName) {
+            foreach (config('activity_log.excluded_routes', []) as $excludedRoute) {
+                if (Str::is($excludedRoute, $routeName)) {
+                    return true;
+                }
+            }
+        }
+
         // Check excluded paths
         $path = $request->path();
         foreach (config('activity_log.excluded_paths', []) as $excludedPath) {
