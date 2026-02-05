@@ -325,7 +325,7 @@ If you discover any security-related issues, please email security@example.com i
 
 ## Credits
 
-- [Edwin EKR](https://github.com/edwinekr)
+- [Edwin KR](https://github.com/EDWNKR)
 
 ## License
 
