@@ -1,0 +1,58 @@
+{
+    "name": "edwinekr/otel-elk-laravel",
+    "description": "OpenTelemetry activity logging integration with ELK Stack for Laravel applications",
+    "keywords": [
+        "laravel",
+        "opentelemetry",
+        "otel",
+        "elk",
+        "elasticsearch",
+        "logstash",
+        "kibana",
+        "activity-log",
+        "logging",
+        "monitoring"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Edwin EKR",
+            "email": "edwin@example.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^10.0|^11.0",
+        "illuminate/http": "^10.0|^11.0",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0",
+        "phpunit/phpunit": "^10.0|^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Edwinekr\\OtelElkLaravel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Edwinekr\\OtelElkLaravel\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Edwinekr\\OtelElkLaravel\\OtelElkServiceProvider"
+            ],
+            "aliases": {
+                "ActivityLog": "Edwinekr\\OtelElkLaravel\\Facades\\ActivityLog"
+            }
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
