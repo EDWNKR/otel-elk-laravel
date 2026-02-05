@@ -64,6 +64,7 @@ class ActivityLogService
 
         $request = request();
         $user = $this->resolveUser($request);
+        $clientIp = $this->resolveClientIp($request);
 
         $data = [
             // Activity info
@@ -80,7 +81,7 @@ class ActivityLogService
             'username' => $user['username'] ?? null,
 
             // Client info
-            'ip' => $request->ip(),
+            'ip' => $clientIp,
             'useragent' => $request->userAgent(),
 
             // Application context
@@ -218,6 +219,7 @@ class ActivityLogService
     {
         $user = $this->resolveUser($request);
         $route = $request->route();
+        $clientIp = $this->resolveClientIp($request);
 
         $data = [
             // Request info
@@ -234,7 +236,7 @@ class ActivityLogService
             'response_size' => strlen($response->getContent()),
 
             // Client info
-            'ip' => $request->ip(),
+            'ip' => $clientIp,
             'useragent' => $request->userAgent(),
             'referer' => $request->header('Referer'),
             'accept_language' => $request->header('Accept-Language'),
@@ -414,6 +416,79 @@ class ActivityLogService
             if (Str::is($assetPath, $path)) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    /**
+     * Resolve the real client IP address
+     * 
+     * Handles proxy headers and local development fallback
+     */
+    private function resolveClientIp(Request $request): string
+    {
+        // Try trusted proxy headers first (for load balancers, CDNs, etc.)
+        $trustedHeaders = config('activity_log.ip.trusted_headers', [
+            'CF-Connecting-IP',
+            'True-Client-IP',
+            'X-Real-IP',
+            'X-Forwarded-For',
+            'X-Client-IP',
+            'X-Cluster-Client-IP',
+        ]);
+
+        $ip = null;
+
+        foreach ($trustedHeaders as $header) {
+            $headerValue = $request->header($header);
+            if ($headerValue) {
+                // X-Forwarded-For can contain multiple IPs: client, proxy1, proxy2
+                // The first one is the original client IP
+                if ($header === 'X-Forwarded-For') {
+                    $ips = array_map('trim', explode(',', $headerValue));
+                    $ip = $ips[0] ?? null;
+                } else {
+                    $ip = trim($headerValue);
+                }
+
+                // Validate it's a proper IP
+                if ($ip && filter_var($ip, FILTER_VALIDATE_IP)) {
+                    break;
+                }
+                $ip = null;
+            }
+        }
+
+        // Fall back to standard request IP
+        if (!$ip) {
+            $ip = $request->ip() ?? '127.0.0.1';
+        }
+
+        // Check if IP is local/private and should use fallback
+        if (config('activity_log.ip.use_local_fallback', true) && $this->isLocalIp($ip)) {
+            return config('activity_log.ip.local_fallback', '103.28.12.1');
+        }
+
+        return $ip;
+    }
+
+    /**
+     * Check if an IP address is local/private
+     */
+    private function isLocalIp(string $ip): bool
+    {
+        // Check for exact matches first
+        if (in_array($ip, ['127.0.0.1', '::1', 'localhost'])) {
+            return true;
+        }
+
+        // Check if it's a private/reserved IP
+        $filterFlags = FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE;
+        
+        if (filter_var($ip, FILTER_VALIDATE_IP, $filterFlags) === false) {
+            // IP is in private or reserved range
+            return true;
         }
 
         return false;

@@ -102,6 +102,12 @@ ACTIVITY_LOG_ONLY_HTML=true
 # Only log routes that have a name (default: true)
 ACTIVITY_LOG_ONLY_NAMED_ROUTES=true
 
+# Fallback IP for local development (default: Banten, Indonesia)
+ACTIVITY_LOG_LOCAL_IP=103.28.12.1
+
+# Use fallback IP when running locally (default: true)
+ACTIVITY_LOG_USE_LOCAL_IP=true
+
 # User resolver: 'default', 'session', or 'custom'
 ACTIVITY_LOG_USER_RESOLVER=default
 

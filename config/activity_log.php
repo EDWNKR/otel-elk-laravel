@@ -334,4 +334,53 @@ return [
         'times' => 2,
         'sleep' => 100, // milliseconds
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | IP Resolution
+    |--------------------------------------------------------------------------
+    |
+    | Configure how client IP addresses are resolved.
+    |
+    */
+    'ip' => [
+        /*
+        | Trusted proxy headers to check for real IP (in order of priority)
+        | Common headers: X-Forwarded-For, X-Real-IP, CF-Connecting-IP (Cloudflare)
+        */
+        'trusted_headers' => [
+            'CF-Connecting-IP',     // Cloudflare
+            'True-Client-IP',       // Akamai, Cloudflare Enterprise
+            'X-Real-IP',            // Nginx proxy
+            'X-Forwarded-For',      // Standard proxy header
+            'X-Client-IP',          // Apache
+            'X-Cluster-Client-IP',  // Load balancers
+        ],
+
+        /*
+        | Fallback IP for local/development environments
+        | This IP will be used when the detected IP is localhost (::1, 127.0.0.1)
+        | Default: Banten, Indonesia IP
+        */
+        'local_fallback' => env('ACTIVITY_LOG_LOCAL_IP', '103.28.12.1'),
+
+        /*
+        | Use fallback IP in local environment
+        | Set to false to log actual localhost IP
+        */
+        'use_local_fallback' => env('ACTIVITY_LOG_USE_LOCAL_IP', true),
+
+        /*
+        | Private/local IP ranges that should use fallback
+        */
+        'local_ranges' => [
+            '127.0.0.1',
+            '::1',
+            '10.0.0.0/8',
+            '172.16.0.0/12',
+            '192.168.0.0/16',
+            'fc00::/7',
+            'fe80::/10',
+        ],
+    ],
 ];
