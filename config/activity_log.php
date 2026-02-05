@@ -103,6 +103,66 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Exclude Static Assets
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, static asset requests (CSS, JS, images, fonts) will not
+    | be logged. This is highly recommended to reduce log noise.
+    |
+    */
+    'exclude_static_assets' => env('ACTIVITY_LOG_EXCLUDE_ASSETS', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Static Asset Extensions
+    |--------------------------------------------------------------------------
+    |
+    | File extensions considered as static assets.
+    |
+    */
+    'static_asset_extensions' => [
+        'css', 'js', 'map',
+        'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'webp', 'avif',
+        'woff', 'woff2', 'ttf', 'eot', 'otf',
+        'mp3', 'mp4', 'webm', 'ogg', 'wav',
+        'pdf', 'doc', 'docx', 'xls', 'xlsx',
+        'zip', 'rar', 'tar', 'gz',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Exclude Redirects
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, redirect responses (3xx status codes) will not be logged.
+    |
+    */
+    'exclude_redirects' => env('ACTIVITY_LOG_EXCLUDE_REDIRECTS', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Only Log Controller Actions
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, only requests handled by controller methods will be logged.
+    | Closure routes and static file routes will be excluded.
+    |
+    */
+    'only_controller_actions' => env('ACTIVITY_LOG_ONLY_CONTROLLERS', true),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Only Log HTML Requests
+    |--------------------------------------------------------------------------
+    |
+    | When enabled, only requests with Accept header containing text/html
+    | will be logged. This excludes CSS, JS, and other asset preloads.
+    |
+    */
+    'only_html_requests' => env('ACTIVITY_LOG_ONLY_HTML', true),
+
+    /*
+    |--------------------------------------------------------------------------
     | Only Log Named Routes
     |--------------------------------------------------------------------------
     |
@@ -110,7 +170,7 @@ return [
     | out asset requests and focus on controller actions.
     |
     */
-    'only_named_routes' => env('ACTIVITY_LOG_ONLY_NAMED_ROUTES', false),
+    'only_named_routes' => env('ACTIVITY_LOG_ONLY_NAMED_ROUTES', true),
 
     /*
     |--------------------------------------------------------------------------

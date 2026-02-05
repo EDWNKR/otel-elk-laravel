@@ -39,7 +39,7 @@ class ActivityLogService
             return;
         }
 
-        if ($this->shouldExclude($request)) {
+        if ($this->shouldExclude($request, $response)) {
             return;
         }
 
@@ -298,7 +298,7 @@ class ActivityLogService
     /**
      * Check if request should be excluded from logging
      */
-    private function shouldExclude(Request $request): bool
+    private function shouldExclude(Request $request, ?Response $response = null): bool
     {
         // Check excluded methods
         if (in_array($request->method(), config('activity_log.excluded_methods', []))) {
@@ -315,11 +315,47 @@ class ActivityLogService
             return true;
         }
 
-        // Check if only named routes should be logged
+        // Check if redirects should be excluded
+        if ($response && config('activity_log.exclude_redirects', true)) {
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 300 && $statusCode < 400) {
+                return true;
+            }
+        }
+
+        // Check if static assets should be excluded
+        if (config('activity_log.exclude_static_assets', true)) {
+            if ($this->isStaticAsset($request)) {
+                return true;
+            }
+        }
+
+        // Check if only HTML requests should be logged
+        if (config('activity_log.only_html_requests', true)) {
+            $acceptHeader = $request->header('Accept', '');
+            if (!Str::contains($acceptHeader, ['text/html', '*/*'])) {
+                return true;
+            }
+            // Also check if it's a CSS/JS preload request
+            if (Str::startsWith($acceptHeader, ['text/css', 'application/javascript', 'image/'])) {
+                return true;
+            }
+        }
+
+        // Check route-related exclusions
         $route = $request->route();
         $routeName = $route?->getName();
+        $routeAction = $route?->getActionName();
 
-        if (config('activity_log.only_named_routes', false) && empty($routeName)) {
+        // Check if only controller actions should be logged
+        if (config('activity_log.only_controller_actions', true)) {
+            if (!$routeAction || $routeAction === 'Closure' || !Str::contains($routeAction, '@')) {
+                return true;
+            }
+        }
+
+        // Check if only named routes should be logged
+        if (config('activity_log.only_named_routes', true) && empty($routeName)) {
             return true;
         }
 
@@ -351,6 +387,31 @@ class ActivityLogService
         $path = $request->path();
         foreach (config('activity_log.excluded_paths', []) as $excludedPath) {
             if (Str::is($excludedPath, $path)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if request is for a static asset
+     */
+    private function isStaticAsset(Request $request): bool
+    {
+        $path = $request->path();
+        $extensions = config('activity_log.static_asset_extensions', []);
+        
+        // Check file extension
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        if (in_array($extension, $extensions)) {
+            return true;
+        }
+
+        // Check common asset paths
+        $assetPaths = ['css/*', 'js/*', 'images/*', 'img/*', 'fonts/*', 'assets/*', 'build/*', 'vendor/*', 'storage/*'];
+        foreach ($assetPaths as $assetPath) {
+            if (Str::is($assetPath, $path)) {
                 return true;
             }
         }

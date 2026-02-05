@@ -87,8 +87,20 @@ ACTIVITY_LOG_EXCLUDE_AJAX=true
 # Exclude requests expecting JSON response (default: false)
 ACTIVITY_LOG_EXCLUDE_JSON=false
 
-# Only log routes that have a name (default: false)
-ACTIVITY_LOG_ONLY_NAMED_ROUTES=false
+# Exclude static assets - CSS, JS, images, fonts (default: true)
+ACTIVITY_LOG_EXCLUDE_ASSETS=true
+
+# Exclude redirect responses - 3xx status codes (default: true)
+ACTIVITY_LOG_EXCLUDE_REDIRECTS=true
+
+# Only log controller actions, exclude Closures (default: true)
+ACTIVITY_LOG_ONLY_CONTROLLERS=true
+
+# Only log HTML requests, exclude CSS/JS preloads (default: true)
+ACTIVITY_LOG_ONLY_HTML=true
+
+# Only log routes that have a name (default: true)
+ACTIVITY_LOG_ONLY_NAMED_ROUTES=true
 
 # User resolver: 'default', 'session', or 'custom'
 ACTIVITY_LOG_USER_RESOLVER=default
