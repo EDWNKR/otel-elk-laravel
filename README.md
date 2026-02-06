@@ -23,7 +23,7 @@ Laravel App → OpenTelemetry SDK → Logstash HTTP (5044) → Elasticsearch →
 
 ## Requirements
 
-- PHP 8.1+
+- PHP 8.0+
 - Laravel 10.x, 11.x, or 12.x
 - Guzzle HTTP Client
 
