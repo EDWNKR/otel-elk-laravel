@@ -203,6 +203,132 @@ Authentication events are automatically logged when enabled. These events are tr
 - `auth.registered` - New user registered
 - `auth.password_reset` - Password was reset
 
+## Real User Monitoring (RUM)
+
+This package includes Elastic APM RUM (Real User Monitoring) support for browser-side performance monitoring and error tracking.
+
+### RUM Configuration
+
+Add the following to your `.env` file:
+
+```env
+# ===========================================
+# Elastic APM RUM Configuration
+# ===========================================
+
+# Enable/disable RUM (default: false)
+ELASTIC_APM_RUM_ENABLED=true
+
+# Service name for RUM (default: APP_NAME)
+ELASTIC_APM_RUM_SERVICE_NAME=my-laravel-app
+
+# Elastic APM RUM endpoint URL (required)
+ELASTIC_APM_RUM_URL=https://your-apm-server:8200
+
+# Secret token for APM authentication (optional)
+ELASTIC_APM_RUM_TOKEN=your-secret-token
+
+# API key for APM authentication (optional, preferred over token)
+ELASTIC_APM_RUM_API_KEY=your-api-key
+
+# Service version for tracking deployments (default: 1.0.0)
+ELASTIC_APM_RUM_SERVICE_VERSION=1.0.0
+
+# Environment identifier (default: APP_ENV)
+ELASTIC_APM_RUM_ENVIRONMENT=production
+
+# Transaction sample rate 0.0 to 1.0 (default: 1.0 = 100%)
+ELASTIC_APM_RUM_SAMPLE_RATE=1.0
+
+# Page load transaction name (default: Page Load)
+ELASTIC_APM_RUM_PAGE_LOAD_NAME="Page Load"
+
+# Enable page load span ID (default: true)
+ELASTIC_APM_RUM_PAGE_LOAD_SPAN_ID=true
+
+# Custom CDN URL for RUM agent (optional)
+ELASTIC_APM_RUM_CDN_URL=https://unpkg.com/@elastic/apm-rum@5.16.0/dist/bundles/elastic-apm-rum.umd.min.js
+```
+
+### Using the RUM Blade Component
+
+Add the RUM script to your layout file (before closing `</head>` tag):
+
+```blade
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My App</title>
+    
+    {{-- Include Elastic APM RUM Script --}}
+    <x-rum-script />
+</head>
+<body>
+    @yield('content')
+</body>
+</html>
+```
+
+The component will only render when RUM is enabled (`ELASTIC_APM_RUM_ENABLED=true`) and a valid server URL is configured.
+
+### Using the RUM Facade
+
+For more control, use the `Rum` facade:
+
+```php
+use Edwinekr\OtelElkLaravel\Facades\Rum;
+
+// Check if RUM is enabled
+if (Rum::isEnabled()) {
+    // Get the full RUM configuration
+    $config = Rum::getConfig();
+    
+    // Get the initialization script as JSON string
+    $initScript = Rum::getInitScript();
+    
+    // Get the CDN URL
+    $cdnUrl = Rum::getCdnUrl();
+    
+    // Render the complete script HTML
+    $html = Rum::renderScript();
+}
+```
+
+### Using the RUM Helper
+
+You can also use the helper class directly:
+
+```php
+use Edwinekr\OtelElkLaravel\Helpers\RumHelper;
+
+// Get the full script HTML for custom implementations
+$scriptHtml = RumHelper::renderScript();
+```
+
+### Distributed Tracing Origins
+
+To enable distributed tracing between frontend and backend, configure the origins in `config/activity_log.php`:
+
+```php
+'elastic_apm_rum' => [
+    // ... other options
+    'distributed_tracing_origins' => [
+        'https://api.example.com',
+        'https://backend.example.com',
+    ],
+],
+```
+
+### Publishing RUM Views
+
+To customize the RUM script template:
+
+```bash
+php artisan vendor:publish --tag=otel-elk-views
+```
+
+This will publish the views to `resources/views/vendor/otel-elk/`.
+
 ### Using Session-Based User Resolver
 
 If your application uses session-based authentication instead of Laravel's built-in auth:

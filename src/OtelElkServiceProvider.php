@@ -2,9 +2,11 @@
 
 namespace Edwinekr\OtelElkLaravel;
 
+use Edwinekr\OtelElkLaravel\Helpers\RumHelper;
 use Edwinekr\OtelElkLaravel\Listeners\AuthActivityListener;
 use Edwinekr\OtelElkLaravel\Middleware\ActivityLogMiddleware;
 use Edwinekr\OtelElkLaravel\Services\ActivityLogService;
+use Edwinekr\OtelElkLaravel\View\Components\RumScript;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Auth\Events\Login;
@@ -13,6 +15,7 @@ use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -36,6 +39,14 @@ class OtelElkServiceProvider extends ServiceProvider
 
         // Register alias for easier access
         $this->app->alias(ActivityLogService::class, 'activity-log');
+
+        // Register RUM Helper
+        $this->app->singleton(RumHelper::class, function ($app) {
+            return new RumHelper();
+        });
+
+        // Register alias for RUM
+        $this->app->alias(RumHelper::class, 'rum');
     }
 
     /**
@@ -47,6 +58,17 @@ class OtelElkServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../config/activity_log.php' => config_path('activity_log.php'),
         ], 'otel-elk-config');
+
+        // Publish views
+        $this->publishes([
+            __DIR__ . '/../resources/views' => resource_path('views/vendor/otel-elk'),
+        ], 'otel-elk-views');
+
+        // Load views
+        $this->loadViewsFrom(__DIR__ . '/../resources/views', 'otel-elk');
+
+        // Register Blade component
+        Blade::component('rum-script', RumScript::class);
 
         // Register middleware alias
         $router = $this->app->make(Router::class);

@@ -383,4 +383,91 @@ return [
             'fe80::/10',
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Elastic APM RUM (Real User Monitoring)
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for Elastic APM Real User Monitoring (RUM). This enables
+    | browser-side performance monitoring and error tracking.
+    |
+    */
+    'elastic_apm_rum' => [
+        /*
+        | Enable/Disable RUM
+        | When disabled, the RUM script will not be injected into pages.
+        */
+        'enabled' => env('ELASTIC_APM_RUM_ENABLED', false),
+
+        /*
+        | RUM Service Name
+        | The name of your service as it will appear in Elastic APM.
+        */
+        'service_name' => env('ELASTIC_APM_RUM_SERVICE_NAME', env('APP_NAME', 'laravel')),
+
+        /*
+        | RUM Server URL
+        | The URL of your Elastic APM server's RUM endpoint.
+        */
+        'server_url' => env('ELASTIC_APM_RUM_URL', ''),
+
+        /*
+        | RUM Secret Token (optional)
+        | Secret token for authenticating with the APM server.
+        | Note: RUM typically uses API keys, but token is supported.
+        */
+        'secret_token' => env('ELASTIC_APM_RUM_TOKEN', ''),
+
+        /*
+        | RUM API Key (optional)
+        | API key for authenticating with the APM server.
+        | Preferred over secret token for RUM.
+        */
+        'api_key' => env('ELASTIC_APM_RUM_API_KEY', ''),
+
+        /*
+        | Service Version
+        | Version of your application for tracking deployments.
+        */
+        'service_version' => env('ELASTIC_APM_RUM_SERVICE_VERSION', env('APP_VERSION', '1.0.0')),
+
+        /*
+        | Environment
+        | The deployment environment (production, staging, development).
+        */
+        'environment' => env('ELASTIC_APM_RUM_ENVIRONMENT', env('APP_ENV', 'production')),
+
+        /*
+        | Transaction Sample Rate
+        | Percentage of transactions to capture (0.0 to 1.0).
+        | 1.0 = 100% of transactions, 0.5 = 50%, etc.
+        */
+        'transaction_sample_rate' => env('ELASTIC_APM_RUM_SAMPLE_RATE', 1.0),
+
+        /*
+        | Page Load Transaction Name
+        | Name pattern for page load transactions.
+        */
+        'page_load_transaction_name' => env('ELASTIC_APM_RUM_PAGE_LOAD_NAME', 'Page Load'),
+
+        /*
+        | Enable Page Load Span ID
+        | Whether to include span IDs in page load transactions.
+        */
+        'page_load_span_id' => env('ELASTIC_APM_RUM_PAGE_LOAD_SPAN_ID', true),
+
+        /*
+        | Distributed Tracing Origins
+        | Origins to include in distributed tracing.
+        | Use ['*'] to include all origins or specify specific origins.
+        */
+        'distributed_tracing_origins' => [],
+
+        /*
+        | CDN URL for Elastic APM RUM Agent
+        | The URL to load the Elastic APM RUM agent from CDN.
+        */
+        'cdn_url' => env('ELASTIC_APM_RUM_CDN_URL', 'https://unpkg.com/@elastic/apm-rum@5.16.0/dist/bundles/elastic-apm-rum.umd.min.js'),
+    ],
 ];
